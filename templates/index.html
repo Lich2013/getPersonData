@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <!-- Required meta tags always come first -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>证件照查询</title>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="/static/bootstrap.css">
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>查询</label>
+                        <input type="text" class="form-control" id="name" required placeholder="学号或姓名">
+                    </div>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4 text-md-center">
+                    <button type="button" class="btn btn-success">GO !</button>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+        </div>
+    </body>
+    <!-- jQuery first, then Bootstrap JS. -->
+    <script src="/static/jquery.min.js"></script>
+    <script src="/static/bootstrap.js"></script>
+    <script src="/static/socket.js"></script>
+    <script>
+        var s = io.connect('http://' + document.domain + ':' + location.port);
+        s.on('connect', function(msg){console.log(msg);});
+        s.on('getname', function(msg){console.log(msg);});
+        s.on('getjwzx', function(msg){console.log(msg);});
+        s.on('getcet', function(msg){console.log(msg);});
+        s.emit('disconnect', function (msg) {
+            console.log(msg);
+        })
+        $(".btn").on('click', function () {
+            name = $("input").val();
+            if(name == ''){
+                console.log('none!')
+            }
+            s.emit('getphoto', {'name':name})
+        })
+    </script>
+</html>
