@@ -5,7 +5,9 @@ import gevent
 from gevent import monkey
 import urllib
 import os
+import re
 import time
+import json
 import requests
 from flask_socketio import SocketIO, join_room, leave_room, rooms
 from flask import Flask, render_template, request, g
@@ -76,7 +78,13 @@ def getName(name, sid):
     url = 'http://jwzx.cqupt.edu.cn/pubBjStu.php?searchKey=' + urllib.quote_plus(gbkData)
     r = requests.get(url)
     r.encoding = 'gbk'
-    socketio.emit('getname', r.text, room=sid)
+    pattern = re.compile(ur'nbsp;(.*?)</td>')
+    result = re.findall(pattern, r.text)
+    list = []
+    while result:
+        list.append([x.strip() for x in result[:7]])
+        result = result[8:]
+    socketio.emit('getname', json.dumps(list), room=sid)
 
 if __name__ == '__main__':
     server = socketio.run(app)
