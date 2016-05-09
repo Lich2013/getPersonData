@@ -18,19 +18,23 @@ app.debug = True
 socketio = SocketIO(app, async_mode='gevent')
 BASEPATH = os.path.dirname(__file__)
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 @socketio.on('connect')
 def connect():
     join_room(request.sid)
     socketio.emit('connect', 'connect success')
 
+
 @socketio.on('disconnect')
 def connect():
     leave_room(request.sid)
     socketio.emit('disconnect', 'disconnect success')
+
 
 @socketio.on('getphoto')
 def getPhoto(name):
@@ -44,13 +48,13 @@ def getPhoto(name):
 
 
 def getJwzx(name, sid):
-    imageName = 'jwzx' + name+'.jpg'
-    if os.path.exists(BASEPATH+'/static/'+imageName) is False:
+    imageName = 'jwzx' + name + '.jpg'
+    if os.path.exists(BASEPATH + '/static/' + imageName) is False:
         url = 'http://jwzx.cqupt.edu.cn/showstuPic.php?xh=' + name
         r = requests.get(url, stream=True)
         img = r.content
         try:
-            with open(BASEPATH+'/static/'+imageName, "wb") as jpg:
+            with open(BASEPATH + '/static/' + imageName, "wb") as jpg:
                 jpg.write(img)
         except IOError as e:
             print(e)
@@ -75,7 +79,8 @@ def getName(name, sid):
     utf8Data = name
     unicodeData = utf8Data.decode("UTF-8")
     gbkData = unicodeData.encode("GBK")
-    url = 'http://jwzx.cqupt.edu.cn/pubBjStu.php?searchKey=' + urllib.quote_plus(gbkData)
+    url = 'http://jwzx.cqupt.edu.cn/pubBjStu.php?searchKey=' + \
+        urllib.quote_plus(gbkData)
     r = requests.get(url)
     r.encoding = 'gbk'
     pattern = re.compile(ur'nbsp;(.*?)</td>')
